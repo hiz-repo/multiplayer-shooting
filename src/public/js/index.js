@@ -401,10 +401,8 @@ class Main extends Phaser.Scene {
         this.connectionStatusText.text = isIntended ? "Server connection was lost": "Opponent has disconnected.";
         const result = isIntended ? "" : "Enemy Escaped";
         const resultText = this.add.text(400, 200, result).setFontSize(100).setFontFamily("Arial").setOrigin(0.5).setAlpha(0);
-        if(!this.room) {
-            this.room.leave();
-            delete this.room;
-        }
+        this.room.leave();
+        delete this.room;
 
         this.tweens.add({
             targets: resultText,
