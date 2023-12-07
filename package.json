@@ -2,8 +2,11 @@
   "private": true,
   "name": "my-app",
   "version": "1.0.0",
-  "description": "npm init template for bootstrapping an empty Colyseus project",
+  "description": "A Colyseus project created via create-colyseus",
   "main": "dist/index.js",
+  "engines": {
+    "node": ">= 16.13.0"
+  },
   "scripts": {
     "start": "node dist/index.js",
     "build": "npm run clean && tsc && npm run copy-static",
