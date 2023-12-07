@@ -219,8 +219,9 @@ class Main extends Phaser.Scene {
                 });
 
                 this.lifeText = [];
+                if(!this.room) return;
                 Object.keys(this.ships).forEach((sessionId) => {
-                    if(sessionId === state.players[sessionId].sessionId) {
+                    if(sessionId === this.room.sessionId) {
                         this.lifeText.unshift("YOU  : " + Array(this.ships[sessionId].life).fill("＊").join(""))
                     } else {
                         this.lifeText.push("ENEMY: " + Array(this.ships[sessionId].life).fill("＊").join(""))
@@ -293,7 +294,7 @@ class Main extends Phaser.Scene {
         this.connectionStatusText = this.add.text(0, 0, "Trying to connect with the server...").setStyle({ color: "#ff0000" }).setPadding(4);
         if(this.room) delete this.room;
         await client.joinOrCreate("room").then(room => {
-            this.connectionStatusText.text = "Connected with the server.";
+            this.connectionStatusText.text = "Connected with the server. Please wait for a while...";
             this.room = room;
         }).catch(e => {
             this.connectionStatusText.text = "Could not connect with the server.";
@@ -341,6 +342,7 @@ class Main extends Phaser.Scene {
     }
 
     hit(ship, bullet) {
+        if(!this.room) return;
         if(ship.active & bullet.active) {
             bullet.setActive(false);
             bullet.setVisible(false);
