@@ -5,7 +5,7 @@
   "description": "A Colyseus project created via create-colyseus",
   "main": "dist/index.js",
   "engines": {
-    "node": ">= 16.13.0 <20.0.0"
+    "node": ">= 16.13.0 <19.0.0"
   },
   "scripts": {
     "start": "node dist/index.js",
