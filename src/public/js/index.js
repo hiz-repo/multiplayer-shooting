@@ -219,7 +219,6 @@ class Main extends Phaser.Scene {
                 });
 
                 this.lifeText = [];
-                if(!this.room) return;
                 Object.keys(this.ships).forEach((sessionId) => {
                     if(sessionId === this.room.sessionId) {
                         this.lifeText.unshift("YOU  : " + Array(this.ships[sessionId].life).fill("＊").join(""))
@@ -361,8 +360,6 @@ class Main extends Phaser.Scene {
     result() {
         const result = this.ships[this.room.sessionId].life <= 0 ? "You Lose": "You Win";
         const resultText = this.add.text(400, 200, result).setFontSize(100).setFontFamily("Arial").setOrigin(0.5).setAlpha(0);
-        this.room.leave();
-        delete this.room;
 
         this.tweens.add({
             targets: resultText,
@@ -372,6 +369,8 @@ class Main extends Phaser.Scene {
         }, this);
 
         this.time.delayedCall(2000, () => {
+            this.room.leave();
+            delete this.room;
             const button = this.add.rectangle(400, 400, 300, 100, "0xda70d6").setOrigin(0.5).setInteractive({cursor: 'pointer'});
             this.add.text(400, 400, "BACK TO MENU").setFontSize(30).setFontFamily("Arial").setColor("0x000000").setOrigin(0.5);
             button.on('pointerdown', () => {
