@@ -9,8 +9,7 @@
   },
   "scripts": {
     "start": "node dist/index.js",
-    "build": "npm run clean && tsc && npm run copy-static",
-    "clean": "rimraf dist",
+    "build": "tsc && npm run copy-static",
     "test": "mocha -r tsx test/**_test.ts --exit --timeout 15000",
     "dev": "tsx watch src/index.ts",
     "copy-static": "cp -r src/* dist"
