@@ -3,13 +3,14 @@
   "name": "my-app",
   "version": "1.0.0",
   "description": "npm init template for bootstrapping an empty Colyseus project",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "loadtest": "colyseus-loadtest loadtest/example.ts --room my_room --numClients 2",
-    "build": "npm run clean && tsc && node node_modules/copyfiles/copyfiles package.json ./lib && node node_modules/copyfiles/copyfiles arena.env ./lib",
-    "clean": "node node_modules/rimraf/bin lib",
-    "test": "mocha --require ts-node/register test/**_test.ts --exit --timeout 15000"
+    "start": "node dist/index.js",
+    "build": "npm run clean && tsc && npm run copy-static",
+    "clean": "rimraf dist",
+    "test": "mocha -r tsx test/**_test.ts --exit --timeout 15000",
+    "dev": "tsx watch src/index.ts",
+    "copy-static": "cp -r src/* dist"
   },
   "author": "",
   "license": "UNLICENSED",
@@ -35,6 +36,7 @@
     "@colyseus/monitor": "^0.14.20",
     "colyseus": "^0.14.20",
     "cors": "^2.8.5",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "tsx": "^4.6.2"
   }
 }
