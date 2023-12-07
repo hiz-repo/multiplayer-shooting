@@ -1,7 +1,7 @@
 require('dotenv').config();
 import { Server } from "colyseus";
 import { createServer } from "http";
-const port = Number(process.env.port) || 3000;
+const port = Number(process.env.PORT) || 3000;
 import { monitor } from "@colyseus/monitor";
 import { MyRoom } from "./rooms/MyRoom";
 import express from 'express';
