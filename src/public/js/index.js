@@ -139,6 +139,7 @@ class Main extends Phaser.Scene {
             });
 
             this.ships = {};
+            this.cachedPlayers = {};
             this.bullets = [];
             
             this.room.state.players.forEach((player, sessionId) => {
@@ -171,8 +172,10 @@ class Main extends Phaser.Scene {
                     this.ships[sessionId].lastUpdate = player.timeStamp;
 
                     // interpolation
-                    this.ships[sessionId].x = player.x;
-                    this.ships[sessionId].y = player.y;
+                    // this.ships[sessionId].x = player.x;
+                    // this.ships[sessionId].y = player.y;
+                    this.cachedPlayers[sessionId].x = player.x;
+                    this.cachedPlayers[sessionId].y = player.y;
                     this.ships[sessionId].angle = player.angle;
                     if(this.ships[sessionId].life !== player.life) {
                         this.ships[sessionId].life = player.life;
@@ -317,6 +320,15 @@ class Main extends Phaser.Scene {
                 this.room.send("player", this.inputPayload);  
             }
 
+        }
+        
+        // interpolate
+        if(this.room) {
+            this.room.state.players.forEach((player, sessionId) => {
+                if(!this.ships[sessionId]) return;
+                this.ships[sessionId].x = Phaser.Math.Linear(this.cachedPlayers[sessionId].x, this.cachedPlayers[sessionId].x, this.latency/1000);
+                this.ships[sessionId].y = Phaser.Math.Linear(this.cachedPlayers[sessionId].y, this.cachedPlayers[sessionId].y, this.latency/1000);
+            });
         }
     }
     
