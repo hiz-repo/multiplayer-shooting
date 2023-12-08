@@ -14,7 +14,7 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.setPosition(x, y);
         this.setVisible(false);
         this.body.onWorldBounds = true;
-      }
+    }
 
     fire(x, y, velX, velY, angle) {
         const offset = 30;
@@ -139,7 +139,6 @@ class Main extends Phaser.Scene {
             });
 
             this.ships = {};
-            this.cachedPlayers = {};
             this.bullets = [];
             
             this.room.state.players.forEach((player, sessionId) => {
@@ -172,10 +171,8 @@ class Main extends Phaser.Scene {
                     this.ships[sessionId].lastUpdate = player.timeStamp;
 
                     // interpolation
-                    // this.ships[sessionId].x = player.x;
-                    // this.ships[sessionId].y = player.y;
-                    this.cachedPlayers[sessionId].x = player.x;
-                    this.cachedPlayers[sessionId].y = player.y;
+                    this.ships[sessionId].x = player.x;
+                    this.ships[sessionId].y = player.y;
                     this.ships[sessionId].angle = player.angle;
                     if(this.ships[sessionId].life !== player.life) {
                         this.ships[sessionId].life = player.life;
@@ -237,9 +234,9 @@ class Main extends Phaser.Scene {
                     }
                 });
                 // interpolation
-                const x = newBullet.x + this.ships[newBullet.emitterSessionId].body.velocity.x * (this.latency^2/1000);
-                const y = newBullet.y + this.ships[newBullet.emitterSessionId].body.velocity.y * (this.latency^2/1000);
-                const angle = newBullet.angle + this.ships[newBullet.emitterSessionId].body.angularVelocity * (this.latency^2/1000);
+                const x = newBullet.x + this.ships[newBullet.emitterSessionId].body.velocity.x * (this.latency/1000);
+                const y = newBullet.y + this.ships[newBullet.emitterSessionId].body.velocity.y * (this.latency/1000);
+                const angle = newBullet.angle + this.ships[newBullet.emitterSessionId].body.angularVelocity * (this.latency/1000);
                 const vel = this.physics.velocityFromAngle(angle, 900);
                 newBulletFired.fire(x, y, vel.x, vel.y, angle);
             };
@@ -320,15 +317,6 @@ class Main extends Phaser.Scene {
                 this.room.send("player", this.inputPayload);  
             }
 
-        }
-
-        // interpolate
-        if(this.room && this.ships) {
-            this.room.state.players.forEach((player, sessionId) => {
-                if(!this.ships[sessionId]) return;
-                this.ships[sessionId].x = Phaser.Math.Linear(this.cachedPlayers[sessionId].x, this.cachedPlayers[sessionId].x, this.latency/1000);
-                this.ships[sessionId].y = Phaser.Math.Linear(this.cachedPlayers[sessionId].y, this.cachedPlayers[sessionId].y, this.latency/1000);
-            });
         }
     }
     
