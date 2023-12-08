@@ -1,7 +1,6 @@
 const BACKEND_URL = (window.location.href.indexOf("localhost") === -1)
     ? `${window.location.protocol.replace("http", "ws")}//${window.location.hostname}${(window.location.port && `:${window.location.port}`)}`
-    : "ws://localhost:3000"
-// const BACKEND_HTTP_URL = BACKEND_URL.replace("ws", "http");
+    : "ws://localhost:3000";
 const client = new Colyseus.Client(BACKEND_URL);
 
 class Bullet extends Phaser.Physics.Arcade.Sprite {
@@ -113,9 +112,9 @@ class Main extends Phaser.Scene {
         this.input.on('pointerup', (cursor) => {
             this.keySpace.isDown = false;
         });
-        
+
+        // start        
         this.room.onMessage("start", () => {
-            // initialize
             this.timer.remove();
             this.connectionStatusText.text = "";
             this.isFinished = false;
@@ -138,6 +137,7 @@ class Main extends Phaser.Scene {
                 }
             });
 
+            // entities
             this.ships = {};
             this.bullets = [];
             
@@ -147,14 +147,12 @@ class Main extends Phaser.Scene {
                 this.ships[sessionId].setActive(false);
                 this.ships[sessionId].setVisible(true);
                 this.ships[sessionId].lastUpdate = player.timeStamp;
-
                 this.physics.add.overlap(this.ships[sessionId], this.bullets, this.hit, null, this);
                 this.room.state.players.forEach((player_, sessionId_) => {
                     if(sessionId !== sessionId_) {
                         this.physics.add.overlap(this.ships[sessionId], this.ships[sessionId_], this.crash, null, this);
                     }
                 });
-
             });
 
             this.room.onStateChange((state) => {
@@ -167,19 +165,18 @@ class Main extends Phaser.Scene {
                 state.players.forEach((player, sessionId) => {
                     if(!this.ships[sessionId]) return;
                     if(this.isFinished) return;
-                    this.ships[sessionId].angularVelocity = 0;
                     this.ships[sessionId].lastUpdate = player.timeStamp;
 
-                    // interpolation
+                    // coordinates
                     this.ships[sessionId].x = player.x;
                     this.ships[sessionId].y = player.y;
                     this.ships[sessionId].angle = player.angle;
                     if(this.ships[sessionId].life !== player.life) {
                         this.ships[sessionId].life = player.life;
                     }
-    
+
+                    // GAME OVER
                     if(player.life <= 0) {
-                        // GAME OVER
                         this.isFinished = true;
                         this.ships[sessionId].setVisible(false);
                         const emitter0 = this.add.particles('spark0').createEmitter({
@@ -210,6 +207,7 @@ class Main extends Phaser.Scene {
                     }                    
                 });
 
+                // life
                 this.lifeText = [];
                 Object.keys(this.ships).forEach((sessionId) => {
                     if(sessionId === this.room.sessionId) {
@@ -226,6 +224,7 @@ class Main extends Phaser.Scene {
                 this.connectionStatusText.setText(this.lifeText);
             });
 
+            // new bullets
             this.room.state.bullets.onAdd = (newBullet, key) => {
                 const newBulletFired = new Bullet(this, newBullet.x, newBullet.y, 'bullet');
                 this.room.state.players.forEach((player, sessionId) => {
@@ -233,6 +232,7 @@ class Main extends Phaser.Scene {
                         this.physics.add.overlap(this.ships[sessionId], newBulletFired, this.hit, null, this);
                     }
                 });
+
                 // interpolation
                 const x = newBullet.x + this.ships[newBullet.emitterSessionId].body.velocity.x * (this.latency/1000);
                 const y = newBullet.y + this.ships[newBullet.emitterSessionId].body.velocity.y * (this.latency/1000);
@@ -249,7 +249,8 @@ class Main extends Phaser.Scene {
                     this.abort(false);
                 }
             };
-
+            
+            // start the game
             this.marker = this.add.text(this.ships[this.room.sessionId].x - 25, 220, ["You","▼"]).setFontSize(30).setFontFamily("Arial").setAlign("center");
             this.timerText = this.add.text(400, 300, "5").setFontSize(100).setFontFamily("Arial").setOrigin(0.5).setAlpha(1);
             this.sec = 5;
@@ -316,7 +317,6 @@ class Main extends Phaser.Scene {
             if(this.ships[this.room.sessionId].active) {
                 this.room.send("player", this.inputPayload);  
             }
-
         }
     }
     
