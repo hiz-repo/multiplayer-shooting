@@ -325,8 +325,6 @@ class Main extends Phaser.Scene {
         if(!this.room.state) return false;
         if(!this.room.state.players) return false;
         if(!this.ships) return false;
-        if(!this.cachedPlayers) return false;
-        if(!this.cachedPlayers[this.room.sessionId]) return false;
         if(!this.ships[this.room.sessionId]) return false;
         if(!this.ships[this.room.sessionId].active) return false;
         if(this.isFinished) return false;
