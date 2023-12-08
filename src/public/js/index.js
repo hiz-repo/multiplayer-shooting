@@ -321,9 +321,9 @@ class Main extends Phaser.Scene {
             }
 
         }
-        
+
         // interpolate
-        if(this.room) {
+        if(this.room && this.ships) {
             this.room.state.players.forEach((player, sessionId) => {
                 if(!this.ships[sessionId]) return;
                 this.ships[sessionId].x = Phaser.Math.Linear(this.cachedPlayers[sessionId].x, this.cachedPlayers[sessionId].x, this.latency/1000);
