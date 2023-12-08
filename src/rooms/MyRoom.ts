@@ -10,28 +10,20 @@ export class MyRoom extends Room<MyRoomState> {
 
     this.onMessage("player", (client: Client, input: any) => {
       const player = this.state.players.get(client.sessionId);
-      const velocity = 7.5;
-
+      const velocity = 8;
       if(input.W) {
         player.y -= velocity;
-
       } else if (input.S) {
         player.y += velocity;
-      
       }
-      
       if(input.A) {
         player.x -= velocity;
-      
       } else if (input.D) {
         player.x += velocity;
-      
       }
-
       const rawAngle = Math.atan2(input.pointerY - input.y, input.pointerX - input.x) * (180 / Math.PI)
       player.angle = rawAngle > 90 ? rawAngle - 270 : rawAngle + 90;
       player.timeStamp = Date.now();
-
       if(input.isFired) {
         const newBullet = new Bullet();
         newBullet.isActive = true;
@@ -41,14 +33,11 @@ export class MyRoom extends Room<MyRoomState> {
         newBullet.angle = player.angle < -90 ? player.angle + 270 : player.angle - 90;
         this.state.bullets.push(newBullet);
       }
-
     });
-
     this.onMessage("hit", (client: Client) => {
       const player = this.state.players.get(client.sessionId);
       player.life--;
     });
-
     this.onMessage('ping', (client: Client, pingStartedTime: number) => {
       const pingReceivedTime = Date.now();
       client.send('pong', {
@@ -56,14 +45,11 @@ export class MyRoom extends Room<MyRoomState> {
         pingReceivedTime: pingReceivedTime
       });
     });
-
     this.onMessage('pang', (client: Client, latency: number) => {
       const pongReceivedTime = Date.now();
       const player = this.state.players.get(client.sessionId);
       player.clientTimeOffset = pongReceivedTime + latency;
     });
-
-
   }
 
   onJoin (client: Client, options: any) {
@@ -82,7 +68,6 @@ export class MyRoom extends Room<MyRoomState> {
     player.angle = (player.x === 200) ? 90 : -90;
     player.timeStamp = Date.now();
     this.state.players.set(client.sessionId, player);
-    
     if(this.state.players.size === 2) {
       console.log("Battle started at Room", this.roomId);
       this.broadcast("start", "Ready!", { afterNextPatch: true});

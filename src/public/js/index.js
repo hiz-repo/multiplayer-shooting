@@ -1,7 +1,7 @@
 const BACKEND_URL = (window.location.href.indexOf("localhost") === -1)
     ? `${window.location.protocol.replace("http", "ws")}//${window.location.hostname}${(window.location.port && `:${window.location.port}`)}`
     : "ws://localhost:3000"
-const BACKEND_HTTP_URL = BACKEND_URL.replace("ws", "http");
+// const BACKEND_HTTP_URL = BACKEND_URL.replace("ws", "http");
 const client = new Colyseus.Client(BACKEND_URL);
 
 class Bullet extends Phaser.Physics.Arcade.Sprite {
@@ -139,6 +139,7 @@ class Main extends Phaser.Scene {
             });
 
             this.ships = {};
+            this.bullets = [];
             
             this.room.state.players.forEach((player, sessionId) => {
                 this.ships[sessionId] = new Ship(this, player.x, player.y, 'ship');
@@ -166,19 +167,10 @@ class Main extends Phaser.Scene {
                 state.players.forEach((player, sessionId) => {
                     if(!this.ships[sessionId]) return;
                     if(this.isFinished) return;
-                    //this.ships[sessionId].body.velocity.x = this.ships[sessionId].body.velocity.x / 2;
-                    //this.ships[sessionId].body.velocity.y = this.ships[sessionId].body.velocity.y / 2;
-                    //this.ships[sessionId].angularVelocity = this.ships[sessionId].angularVelocity / 2;
-                    //this.ships[sessionId].body.velocity.x = 0;
-                    //this.ships[sessionId].body.velocity.y = 0;
                     this.ships[sessionId].angularVelocity = 0;
-                    
-                    // if(player.timeStamp === this.ships[sessionId].lastUpdate) return;
                     this.ships[sessionId].lastUpdate = player.timeStamp;
 
                     // interpolation
-                    //this.ships[sessionId].body.velocity.x = player.velocityX;
-                    //this.ships[sessionId].body.velocity.y = player.velocityY;
                     this.ships[sessionId].x = player.x;
                     this.ships[sessionId].y = player.y;
                     this.ships[sessionId].angle = player.angle;
@@ -321,7 +313,6 @@ class Main extends Phaser.Scene {
                 angle: this.ships[this.room.sessionId].angle,
                 isFired: this.latency < 200 ? this.input.keyboard.checkDown(this.keySpace, 200) : false
             }
-
             if(this.ships[this.room.sessionId].active) {
                 this.room.send("player", this.inputPayload);  
             }
@@ -360,14 +351,12 @@ class Main extends Phaser.Scene {
     result() {
         const result = this.ships[this.room.sessionId].life <= 0 ? "You Lose": "You Win";
         const resultText = this.add.text(400, 200, result).setFontSize(100).setFontFamily("Arial").setOrigin(0.5).setAlpha(0);
-
         this.tweens.add({
             targets: resultText,
             alpha: 1,
             duration: 3000,
             ease: 'Power2'
         }, this);
-
         this.time.delayedCall(2000, () => {
             this.room.leave();
             delete this.room;
@@ -409,7 +398,6 @@ class Main extends Phaser.Scene {
             duration: 3000,
             ease: 'Power2'
         }, this);
-
         this.time.delayedCall(2000, () => {
             const button = this.add.rectangle(400, 400, 300, 100, "0xda70d6").setOrigin(0.5).setInteractive({cursor: 'pointer'});
             this.add.text(400, 400, "BACK TO MENU").setFontSize(30).setFontFamily("Arial").setColor("0x000000").setOrigin(0.5);
