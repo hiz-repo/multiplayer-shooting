@@ -234,9 +234,9 @@ class Main extends Phaser.Scene {
                     }
                 });
                 // interpolation
-                const x = newBullet.x + this.ships[newBullet.emitterSessionId].body.velocity.x * (this.latency/1000);
-                const y = newBullet.y + this.ships[newBullet.emitterSessionId].body.velocity.y * (this.latency/1000);
-                const angle = newBullet.angle + this.ships[newBullet.emitterSessionId].body.angularVelocity * (this.latency/1000);
+                const x = newBullet.x + this.ships[newBullet.emitterSessionId].body.velocity.x * (this.latency^2/1000);
+                const y = newBullet.y + this.ships[newBullet.emitterSessionId].body.velocity.y * (this.latency^2/1000);
+                const angle = newBullet.angle + this.ships[newBullet.emitterSessionId].body.angularVelocity * (this.latency^2/1000);
                 const vel = this.physics.velocityFromAngle(angle, 900);
                 newBulletFired.fire(x, y, vel.x, vel.y, angle);
             };
